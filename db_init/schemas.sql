@@ -47,7 +47,7 @@ CREATE TYPE operation_type AS ENUM ('DEPOSIT', 'TRANSFER', 'WITHDRAW');
 CREATE TABLE public.history (
                                 id uuid NOT NULL DEFAULT gen_random_uuid(), -- id истории
                                 account_id uuid NOT NULL, -- id аккаунта
-                                operation_type public.operation_type NOT NULL, -- тип операции (enum: deposit, transfer, withdraw)
+                                operation_type public.operation_type NOT NULL, -- тип операции (enum: DEPOSIT, TRANSFER, WITHDRAW)
                                 operation_sum money NOT NULL, -- сумма операции
                                 operation_timestamp timestamptz NOT NULL DEFAULT now(), -- время операции (время создание записи в таблице)
                                 to_account_id uuid NOT NULL, -- id аккаунта, кому переводят деньги
