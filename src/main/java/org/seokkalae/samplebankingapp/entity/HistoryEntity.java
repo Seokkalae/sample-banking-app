@@ -16,7 +16,7 @@ public class HistoryEntity {
 
     @ManyToOne
     @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false)
-    private AccountEntity account;
+    private BankAccountEntity bankAccount;
 
     @Column(name = "operation_type", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -31,7 +31,7 @@ public class HistoryEntity {
 
     @ManyToOne
     @JoinColumn(name = "to_account_id", referencedColumnName = "id")
-    private AccountEntity toAccount;
+    private BankAccountEntity toBankAccount;
 
     public UUID getId() {
         return id;
@@ -41,12 +41,12 @@ public class HistoryEntity {
         this.id = id;
     }
 
-    public AccountEntity getAccount() {
-        return account;
+    public BankAccountEntity getBankAccount() {
+        return bankAccount;
     }
 
-    public void setAccount(AccountEntity account) {
-        this.account = account;
+    public void setBankAccount(BankAccountEntity account) {
+        this.bankAccount = account;
     }
 
     public OperationType getOperationType() {
@@ -73,11 +73,11 @@ public class HistoryEntity {
         this.operationTimestamp = operationTimestamp;
     }
 
-    public AccountEntity getToAccount() {
-        return toAccount;
+    public BankAccountEntity getToBankAccount() {
+        return toBankAccount;
     }
 
-    public void setToAccount(AccountEntity toAccount) {
-        this.toAccount = toAccount;
+    public void setToBankAccount(BankAccountEntity toAccount) {
+        this.toBankAccount = toAccount;
     }
 }
