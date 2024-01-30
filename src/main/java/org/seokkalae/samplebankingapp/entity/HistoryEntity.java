@@ -27,7 +27,7 @@ public class HistoryEntity {
     private BigDecimal operationSum;
 
     @Column(name = "operation_timestamp", nullable = false)
-    private OffsetDateTime operationTimestamp;
+    private OffsetDateTime operationTimestampTZ;
 
     @ManyToOne
     @JoinColumn(name = "to_account_id", referencedColumnName = "id")
@@ -65,12 +65,12 @@ public class HistoryEntity {
         this.operationSum = operationSum;
     }
 
-    public OffsetDateTime getOperationTimestamp() {
-        return operationTimestamp;
+    public OffsetDateTime getOperationTimestampTZ() {
+        return operationTimestampTZ;
     }
 
-    public void setOperationTimestamp(OffsetDateTime operationTimestamp) {
-        this.operationTimestamp = operationTimestamp;
+    public void setOperationTimestampTZ(OffsetDateTime operationTimestamp) {
+        this.operationTimestampTZ = operationTimestamp;
     }
 
     public BankAccountEntity getToBankAccount() {
