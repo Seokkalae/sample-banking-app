@@ -31,11 +31,11 @@ public class BankingService {
         log.info("trying to find banking account with id: {}", request.bankingAccountId());
         BankAccountEntity bankAccountEntity = bankingRepo.findById(request.bankingAccountId())
                 .orElseThrow(
-                        () -> new RuntimeException("Account doesn't exist")
+                        () -> new RuntimeException("Banking account doesn't exist")
                 );
         BigDecimal resultSum = bankAccountEntity.getMoneyFunds().add(request.sum());
         bankAccountEntity.setMoneyFunds(resultSum);
-        log.info("deposit money to account with sum: {}", request.sum());
+        log.info("deposit money to banking account with sum: {}", request.sum());
         BankAccountEntity save = bankingRepo.save(bankAccountEntity);
         log.info("deposit successful");
 
@@ -55,14 +55,14 @@ public class BankingService {
 
     @Transactional
     public BankingResponse withdraw(WithdrawRequest request) {
-        log.info("trying to find account with id: {}", request.bankingAccountId());
+        log.info("trying to find banking account with id: {}", request.bankingAccountId());
         BankAccountEntity accountEntity = bankingRepo.findBankAccountEntitiesByIdAndPin(
                         request.bankingAccountId(),
                         request.pin()
                 )
                 .orElseThrow(
                         () -> new EntityNotFoundException(
-                                "account with id " + request.bankingAccountId() + " doesn't found"
+                                "banking account with id " + request.bankingAccountId() + " doesn't found"
                         )
                 );
 
@@ -71,7 +71,7 @@ public class BankingService {
             throw new RuntimeException("total amount can't be negative");
         accountEntity.setMoneyFunds(resultSum);
 
-        log.info("withdraw money to account with sum: {}", request.sum());
+        log.info("withdraw money to banking account with sum: {}", request.sum());
         BankAccountEntity save = bankingRepo.save(accountEntity);
         log.info("withdraw successful");
 
@@ -91,22 +91,22 @@ public class BankingService {
 
     @Transactional
     public BankingResponse transfer(TransferRequest request) {
-        log.info("trying to find account for writing off money with id: {}", request.fromBankingAccountId());
+        log.info("trying to find banking account for writing off money with id: {}", request.fromBankingAccountId());
         BankAccountEntity fromAccountEntity = bankingRepo.findBankAccountEntitiesByIdAndPin(
                         request.fromBankingAccountId(),
                         request.pin()
                 )
                 .orElseThrow(
                         () -> new EntityNotFoundException(
-                                "account for writing off money with id: " + request.fromBankingAccountId()
+                                "banking account for writing off money with id: " + request.fromBankingAccountId()
                         )
                 );
 
-        log.info("trying to find account for replenishment money with id: {}", request.toBankingAccountId());
+        log.info("trying to find banking account for replenishment money with id: {}", request.toBankingAccountId());
         BankAccountEntity toAccountEntity = bankingRepo.findById(request.toBankingAccountId())
                 .orElseThrow(
                         () -> new EntityNotFoundException(
-                                "account for writing off money with id: " + request.fromBankingAccountId()
+                                "banking account for writing off money with id: " + request.fromBankingAccountId()
                         )
                 );
 
@@ -116,7 +116,7 @@ public class BankingService {
             throw new RuntimeException("total amount can't be negative");
         fromAccountEntity.setMoneyFunds(fromResultSum);
 
-        log.info("writing off money from account with sum: {}", request.sum());
+        log.info("writing off money from banking account with sum: {}", request.sum());
         BankAccountEntity saveFrom = bankingRepo.save(fromAccountEntity);
         log.info("writing off successful");
 
@@ -130,7 +130,7 @@ public class BankingService {
         BigDecimal toResultSum = toAccountEntity.getMoneyFunds().add(request.sum());
         toAccountEntity.setMoneyFunds(toResultSum);
 
-        log.info("replenishment money to account with sum: {}", request.sum());
+        log.info("replenishment money to banking account with sum: {}", request.sum());
         BankAccountEntity saveTo = bankingRepo.save(toAccountEntity);
         log.info("replenishment successful");
 
