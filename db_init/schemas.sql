@@ -21,7 +21,7 @@ COMMENT ON COLUMN public.account.patronymic IS 'отчество';
 
 CREATE TABLE public.bank_account (
                                      id uuid NOT NULL DEFAULT gen_random_uuid(), -- id банковского счета
-                                     money_funds money NOT NULL, -- денежные средства
+                                     money_funds money NOT NULL DEFAULT 0, -- денежные средства
                                      pin varchar(4) NOT NULL, -- пин код
                                      account_id uuid NOT NULL, -- id аккаунта
                                      CONSTRAINT bank_account_pk PRIMARY KEY (id)
@@ -46,25 +46,25 @@ CREATE TYPE operation_type AS ENUM ('DEPOSIT', 'TRANSFER_OUT', 'TRANSFER_IN', 'W
 
 CREATE TABLE public.history (
                                 id uuid NOT NULL DEFAULT gen_random_uuid(), -- id истории
-                                account_id uuid NOT NULL, -- id аккаунта
-                                operation_type public.operation_type NOT NULL, -- тип операции (enum: DEPOSIT, TRANSFER, WITHDRAW)
+                                bank_account_id uuid NOT NULL, -- id банковского аккаунта
+                                operation_type public.operation_type NOT NULL, -- тип операции (enum: DEPOSIT, TRANSFER_OUT, TRANSFER_IN, WITHDRAW
                                 operation_sum money NOT NULL, -- сумма операции
                                 operation_timestamp timestamptz NOT NULL DEFAULT now(), -- время операции (время создание записи в таблице)
-                                to_account_id uuid NOT NULL, -- id аккаунта, кому переводят деньги
+                                to_bank_account_id uuid, -- id банковского аккаунта. если TRANSFER_OUT, то id - кому перевели, если TRANSFER_IN - кто перевел
                                 CONSTRAINT history_pk PRIMARY KEY (id)
 );
 
 -- Column comments
 
 COMMENT ON COLUMN public.history.id IS 'id истории';
-COMMENT ON COLUMN public.history.account_id IS 'id аккаунта';
-COMMENT ON COLUMN public.history.operation_type IS 'тип операции (enum: deposit, transfer, withdraw)';
+COMMENT ON COLUMN public.history.bank_account_id IS 'id банковского аккаунта';
+COMMENT ON COLUMN public.history.operation_type IS 'тип операции (enum: DEPOSIT, TRANSFER_OUT, TRANSFER_IN, WITHDRAW)';
 COMMENT ON COLUMN public.history.operation_sum IS 'сумма операции';
 COMMENT ON COLUMN public.history.operation_timestamp IS 'время операции (время создание записи в таблице)';
-COMMENT ON COLUMN public.history.to_account_id IS 'id аккаунта, кому переводят деньги';
+COMMENT ON COLUMN public.history.to_bank_account_id IS 'id банковского аккаунта. если TRANSFER_OUT, то id - кому перевели, если TRANSFER_IN - кто перевел';
 
 
 -- public.history внешние включи
 
-ALTER TABLE public.history ADD CONSTRAINT history_account_fk FOREIGN KEY (account_id) REFERENCES public.account(id);
-ALTER TABLE public.history ADD CONSTRAINT history_to_account_fk FOREIGN KEY (to_account_id) REFERENCES public.account(id);
+ALTER TABLE public.history ADD CONSTRAINT history_bank_account_fk FOREIGN KEY (bank_account_id) REFERENCES public.bank_account(id);
+ALTER TABLE public.history ADD CONSTRAINT history_to_bank_account_fk FOREIGN KEY (to_bank_account_id) REFERENCES public.bank_account(id);

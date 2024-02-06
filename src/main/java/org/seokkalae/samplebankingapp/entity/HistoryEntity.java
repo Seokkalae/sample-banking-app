@@ -1,6 +1,8 @@
 package org.seokkalae.samplebankingapp.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import org.seokkalae.samplebankingapp.enums.OperationType;
 
 import java.math.BigDecimal;
@@ -15,22 +17,22 @@ public class HistoryEntity {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "bank_account_id", referencedColumnName = "id", nullable = false)
     private BankAccountEntity bankAccount;
 
-    @Column(name = "operation_type", nullable = false)
+    @Column(name = "operation_type", nullable = false, columnDefinition = "operation_type")
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     @Enumerated(EnumType.STRING)
-    @Basic(optional = false)
     private OperationType operationType;
 
     @Column(name = "operation_sum", nullable = false)
     private BigDecimal operationSum;
 
-    @Column(name = "operation_timestamp", nullable = false)
+    @Column(name = "operation_timestamp", insertable = false)
     private OffsetDateTime operationTimestampTZ;
 
     @ManyToOne
-    @JoinColumn(name = "to_account_id", referencedColumnName = "id")
+    @JoinColumn(name = "to_bank_account_id", referencedColumnName = "id")
     private BankAccountEntity toBankAccount;
 
     public UUID getId() {
