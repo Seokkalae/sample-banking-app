@@ -13,8 +13,8 @@ public interface BankingAccountRepository extends CrudRepository<BankAccountEnti
 
     Optional<BankAccountEntity>
     findBankAccountEntitiesByAccount_FirstNameAndAccount_LastNameAndAccount_PatronymicAndPin(String firstName,
-                                                                                       String lastName,
-                                                                                       String patronymic,
+                                                                                             String lastName,
+                                                                                             String patronymic,
                                                                                              String pin);
 
     Optional<BankAccountEntity> findBankAccountEntitiesByIdAndPin(UUID id, String pin);
