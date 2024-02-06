@@ -5,7 +5,6 @@ import org.seokkalae.samplebankingapp.entity.AccountEntity;
 import org.seokkalae.samplebankingapp.entity.BankAccountEntity;
 import org.seokkalae.samplebankingapp.model.account.AccountCreateRequest;
 import org.seokkalae.samplebankingapp.model.account.AccountCreateResponse;
-import org.seokkalae.samplebankingapp.model.account.AccountInfoRequest;
 import org.seokkalae.samplebankingapp.model.account.AccountInfoResponse;
 import org.seokkalae.samplebankingapp.repository.BankingAccountRepository;
 import org.slf4j.Logger;
@@ -57,10 +56,10 @@ public class AccountService {
         return accountCreateResponse;
     }
 
-    public AccountInfoResponse getAccountInfo(AccountInfoRequest request) {
-        log.info("trying to find accounts with id: {}", request.accountId());
+    public AccountInfoResponse getAccountInfo(UUID id) {
+        log.info("trying to find accounts with id: {}", id);
         return AccountConverter.fromBankAccountEntityToAccountInfoResponse(
-                bankAccountRepo.findAllByAccount_Id(request.accountId())
+                bankAccountRepo.findAllByAccount_Id(id)
         );
     }
 }

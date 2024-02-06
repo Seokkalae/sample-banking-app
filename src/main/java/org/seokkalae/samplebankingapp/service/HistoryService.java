@@ -24,11 +24,11 @@ public class HistoryService {
         this.historyRepo = historyRepo;
     }
 
-    public AccountHistoryResponse getAccountHistory(UUID bankAccountId) {
-        log.info("trying to find history for account with id: {}", bankAccountId);
+    public AccountHistoryResponse getAccountHistory(UUID accountId) {
+        log.info("trying to find history for account with id: {}", accountId);
         return HistoryConverter
                 .fromHistoryEntityToAccountHistoryResponse(
-                        historyRepo.findAllByBankAccount_IdOrderByOperationTimestampTZDesc(bankAccountId)
+                        historyRepo.findAllByBankAccount_IdOrderByOperationTimestampTZDesc(accountId)
                 );
     }
 
