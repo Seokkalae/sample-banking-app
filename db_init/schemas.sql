@@ -40,7 +40,7 @@ COMMENT ON COLUMN public.bank_account.account_id IS 'id аккаунта';
 
 ALTER TABLE public.bank_account ADD CONSTRAINT bank_account_account_fk FOREIGN KEY (account_id) REFERENCES public.account(id);
 
-CREATE TYPE operation_type AS ENUM ('DEPOSIT', 'TRANSFER', 'WITHDRAW');
+CREATE TYPE operation_type AS ENUM ('DEPOSIT', 'TRANSFER_OUT', 'TRANSFER_IN', 'WITHDRAW');
 
 -- public.history определение
 
