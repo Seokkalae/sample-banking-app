@@ -21,7 +21,7 @@ COMMENT ON COLUMN public.account.patronymic IS 'отчество';
 
 CREATE TABLE public.bank_account (
                                      id uuid NOT NULL DEFAULT gen_random_uuid(), -- id банковского счета
-                                     money_funds money NOT NULL DEFAULT 0, -- денежные средства
+                                     money_funds numeric(20,2) NOT NULL DEFAULT 0, -- денежные средства
                                      pin varchar(4) NOT NULL, -- пин код
                                      account_id uuid NOT NULL, -- id аккаунта
                                      CONSTRAINT bank_account_pk PRIMARY KEY (id)
@@ -48,7 +48,7 @@ CREATE TABLE public.history (
                                 id uuid NOT NULL DEFAULT gen_random_uuid(), -- id истории
                                 bank_account_id uuid NOT NULL, -- id банковского аккаунта
                                 operation_type public.operation_type NOT NULL, -- тип операции (enum: DEPOSIT, TRANSFER_OUT, TRANSFER_IN, WITHDRAW
-                                operation_sum money NOT NULL, -- сумма операции
+                                operation_sum numeric(20,2) NOT NULL, -- сумма операции
                                 operation_timestamp timestamptz NOT NULL DEFAULT now(), -- время операции (время создание записи в таблице)
                                 to_bank_account_id uuid, -- id банковского аккаунта. если TRANSFER_OUT, то id - кому перевели, если TRANSFER_IN - кто перевел
                                 CONSTRAINT history_pk PRIMARY KEY (id)
