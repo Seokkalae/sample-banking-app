@@ -6,11 +6,9 @@ import org.seokkalae.samplebankingapp.model.banking.TransferRequest;
 import org.seokkalae.samplebankingapp.model.banking.WithdrawRequest;
 import org.seokkalae.samplebankingapp.service.BankingService;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
+@RestController
 @RequestMapping(value = "banking", consumes = "application/json")
 public class BankingController {
     private final BankingService bankingService;

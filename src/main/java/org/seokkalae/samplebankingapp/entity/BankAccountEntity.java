@@ -12,7 +12,7 @@ public class BankAccountEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "money_funds", nullable = false)
+    @Column(name = "money_funds", insertable = false)
     private BigDecimal moneyFunds;
 
     @Column(name = "pin", nullable = false)
