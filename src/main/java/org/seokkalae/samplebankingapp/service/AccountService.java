@@ -26,7 +26,7 @@ public class AccountService {
 
     @Transactional
     public AccountCreateResponse createAccount(AccountCreateRequest request) {
-        log.info("trying to find duplicate account with name: {}", request.fullName());
+        log.info("trying to find duplicate bankAccount with name: {}", request.fullName());
         boolean accountAlreadyExist = bankAccountRepo
                 .findBankAccountEntitiesByAccount_FirstNameAndAccount_LastNameAndAccount_PatronymicAndPin(
                         request.fullName().firstName(),
@@ -38,21 +38,21 @@ public class AccountService {
         if (accountAlreadyExist)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
-        BankAccountEntity account = new BankAccountEntity();
-        account.setAccount(new AccountEntity());
-        account.setPin(request.pin());
-        account.getAccount().setFirstName(request.fullName().firstName());
-        account.getAccount().setLastName(request.fullName().lastName());
-        account.getAccount().setPatronymic(request.fullName().patronymic());
+        BankAccountEntity bankAccount = new BankAccountEntity();
+        bankAccount.setAccount(new AccountEntity());
+        bankAccount.setPin(request.pin());
+        bankAccount.getAccount().setFirstName(request.fullName().firstName());
+        bankAccount.getAccount().setLastName(request.fullName().lastName());
+        bankAccount.getAccount().setPatronymic(request.fullName().patronymic());
 
-        log.info("save account with name {} {} {}",
-                account.getAccount().getFirstName(),
-                account.getAccount().getLastName(),
-                account.getAccount().getPatronymic()
+        log.info("save bankAccount with name {} {} {}",
+                bankAccount.getAccount().getFirstName(),
+                bankAccount.getAccount().getLastName(),
+                bankAccount.getAccount().getPatronymic()
         );
         AccountCreateResponse accountCreateResponse = AccountConverter
-                .fromBankAccountEntityToAccountCreateResponse(bankAccountRepo.save(account));
-        log.info("account created with id: {}", account.getId());
+                .fromBankAccountEntityToAccountCreateResponse(bankAccountRepo.save(bankAccount));
+        log.info("account created with id: {}", bankAccount.getAccount().getId());
         return accountCreateResponse;
     }
 

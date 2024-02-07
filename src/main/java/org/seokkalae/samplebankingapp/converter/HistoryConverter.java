@@ -17,7 +17,9 @@ public class HistoryConverter {
                         historyInfo.getOperationType(),
                         historyInfo.getOperationSum(),
                         historyInfo.getOperationTimestampTZ(),
-                        historyInfo.getToBankAccount().getId()
+                        historyInfo.getToBankAccount() == null
+                                ? null
+                                : historyInfo.getToBankAccount().getId()
                 ))
                 .toList();
         AccountEntity account = source.getFirst().getBankAccount().getAccount();

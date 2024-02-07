@@ -28,7 +28,7 @@ public class HistoryService {
         log.info("trying to find history for account with id: {}", accountId);
         return HistoryConverter
                 .fromHistoryEntityToAccountHistoryResponse(
-                        historyRepo.findAllByBankAccount_IdOrderByOperationTimestampTZDesc(accountId)
+                        historyRepo.findAllByBankAccount_Account_IdOrderByOperationTimestampTZDesc(accountId)
                 );
     }
 
