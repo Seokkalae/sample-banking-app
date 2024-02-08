@@ -6,6 +6,7 @@ CREATE TABLE public.account (
                                 first_name varchar(255) NOT NULL, -- имя
                                 last_name varchar(255) NOT NULL, -- фамилия
                                 patronymic varchar(255) NULL, -- отчество
+                                birthday date not null,
                                 CONSTRAINT account_pk PRIMARY KEY (id)
 );
 COMMENT ON TABLE public.account IS 'аккаунт (человек)';

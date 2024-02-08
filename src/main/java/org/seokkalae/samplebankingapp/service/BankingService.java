@@ -7,6 +7,7 @@ import org.seokkalae.samplebankingapp.model.banking.BankingResponse;
 import org.seokkalae.samplebankingapp.model.banking.DepositRequest;
 import org.seokkalae.samplebankingapp.model.banking.TransferRequest;
 import org.seokkalae.samplebankingapp.model.banking.WithdrawRequest;
+import org.seokkalae.samplebankingapp.repository.AccountRepository;
 import org.seokkalae.samplebankingapp.repository.BankingAccountRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,16 +15,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Service
 public class BankingService {
     private final Logger log = LoggerFactory.getLogger(BankingService.class);
     private final HistoryService history;
     private final BankingAccountRepository bankingRepo;
+    private final AccountRepository accountRepo;
 
-    public BankingService(HistoryService history, BankingAccountRepository bankingRepo) {
+    public BankingService(HistoryService history, BankingAccountRepository bankingRepo, AccountRepository accountRepo) {
         this.history = history;
         this.bankingRepo = bankingRepo;
+        this.accountRepo = accountRepo;
     }
 
     @Transactional
@@ -146,5 +150,19 @@ public class BankingService {
                 OperationType.TRANSFER_OUT,
                 saveFrom.getMoneyFunds()
         );
+    }
+
+    @Transactional
+    public BankAccountEntity createBankAccount(UUID accountId, String pin) {
+        log.info("trying to find account with {}", accountId);
+        var account = accountRepo.findById(accountId);
+        if (account.isEmpty())
+            throw new EntityNotFoundException();
+        log.info("create bankAccount with accountId {}", accountId);
+
+        var bankAccount = new BankAccountEntity();
+        bankAccount.setAccount(account.get());
+        bankAccount.setPin(pin);
+        return bankingRepo.save(bankAccount);
     }
 }

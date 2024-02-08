@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(value = "/account", consumes = "application/json")
+@RequestMapping(value = "account", consumes = "application/json")
 public class AccountController {
     private final AccountService accountService;
     private final HistoryService historyService;

@@ -2,6 +2,7 @@ package org.seokkalae.samplebankingapp.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,7 +22,10 @@ public class AccountEntity {
     @Column(name = "patronymic")
     private String patronymic;
 
-    @OneToMany
+    @Column(name = "birthday")
+    private LocalDate birthday;
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     private List<BankAccountEntity> listBankAccount;
 
     public UUID getId() {
@@ -62,5 +66,13 @@ public class AccountEntity {
 
     public void setListBankAccount(List<BankAccountEntity> listBankAccount) {
         this.listBankAccount = listBankAccount;
+    }
+
+    public LocalDate getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(LocalDate birthday) {
+        this.birthday = birthday;
     }
 }

@@ -10,14 +10,6 @@ import java.util.UUID;
 
 @Repository
 public interface BankingAccountRepository extends CrudRepository<BankAccountEntity, UUID> {
-
-    Optional<BankAccountEntity>
-    findBankAccountEntitiesByAccount_FirstNameAndAccount_LastNameAndAccount_PatronymicAndPin(String firstName,
-                                                                                             String lastName,
-                                                                                             String patronymic,
-                                                                                             String pin);
-
     Optional<BankAccountEntity> findBankAccountEntitiesByIdAndPin(UUID id, String pin);
-
     List<BankAccountEntity> findAllByAccount_Id(UUID id);
 }
