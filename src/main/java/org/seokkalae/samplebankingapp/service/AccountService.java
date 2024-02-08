@@ -34,12 +34,12 @@ public class AccountService {
 
     @Transactional
     public AccountCreateResponse createAccount(AccountCreateRequest request) {
-        String firstName = request.fullName().firstName();
-        String lastName = request.fullName().lastName();
-        String patronymic = request.fullName().patronymic();
+        String firstName = request.firstName();
+        String lastName = request.lastName();
+        String patronymic = request.patronymic();
         LocalDate birthday = request.birthday();
 
-        log.info("trying to find duplicate bankAccount with name: {}", request.fullName());
+        log.info("trying to find duplicate bankAccount with name: {}", request.getFullName());
 
         Optional<AccountEntity> existingAccount = accountRepo.findByFirstNameAndLastNameAndPatronymicAndBirthday(
                 firstName, lastName, patronymic, birthday
@@ -70,7 +70,7 @@ public class AccountService {
         var savedAccount = accountRepo.save(accountEntity);
         log.info("account created with id: {}", savedAccount.getId());
 
-        return new AccountCreateResponse(savedAccount.getId(), savedAccount.getId());
+        return new AccountCreateResponse(savedAccount.getId(), bankAccountEntity.getId());
     }
 
     public AccountInfoResponse getAccountInfo(UUID id) {

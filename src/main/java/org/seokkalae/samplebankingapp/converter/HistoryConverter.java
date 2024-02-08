@@ -2,7 +2,6 @@ package org.seokkalae.samplebankingapp.converter;
 
 import org.seokkalae.samplebankingapp.entity.AccountEntity;
 import org.seokkalae.samplebankingapp.entity.HistoryEntity;
-import org.seokkalae.samplebankingapp.model.account.submodel.AccountFullNameModel;
 import org.seokkalae.samplebankingapp.model.history.AccountHistoryResponse;
 import org.seokkalae.samplebankingapp.model.history.submodel.HistoryInfoModel;
 
@@ -23,10 +22,11 @@ public class HistoryConverter {
                 ))
                 .toList();
         AccountEntity account = source.getFirst().getBankAccount().getAccount();
-        var accountFullName = new AccountFullNameModel(account.getFirstName(),
+        return new AccountHistoryResponse(
+                account.getFirstName(),
                 account.getLastName(),
-                account.getPatronymic()
+                account.getPatronymic(),
+                historyInfos
         );
-        return new AccountHistoryResponse(accountFullName, historyInfos);
     }
 }

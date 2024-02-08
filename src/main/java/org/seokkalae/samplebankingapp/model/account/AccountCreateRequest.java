@@ -1,11 +1,17 @@
 package org.seokkalae.samplebankingapp.model.account;
 
-import org.seokkalae.samplebankingapp.model.account.submodel.AccountFullNameModel;
-
 import java.time.LocalDate;
+import java.util.StringJoiner;
 
 public record AccountCreateRequest(
-        AccountFullNameModel fullName,
+        String firstName,
+        String lastName,
+        String patronymic,
         LocalDate birthday,
-        String pin) {
+        String pin)
+{
+    public String getFullName() {
+        StringJoiner joiner  = new StringJoiner(" ");
+        return joiner.add(firstName).add(lastName).add(patronymic).toString();
+    }
 }
