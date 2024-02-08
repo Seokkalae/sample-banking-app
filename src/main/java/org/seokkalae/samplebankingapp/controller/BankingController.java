@@ -8,8 +8,10 @@ import org.seokkalae.samplebankingapp.service.BankingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
-@RequestMapping(value = "banking", consumes = "application/json")
+@RequestMapping(value = "banking/{bank_account_id}", consumes = "application/json")
 public class BankingController {
     private final BankingService bankingService;
 
@@ -20,27 +22,33 @@ public class BankingController {
     @PostMapping("deposit")
     @ResponseStatus(HttpStatus.OK)
     public BankingResponse deposit(
+            @PathVariable(name = "bank_account_id")
+            UUID accountId,
             @RequestBody
             DepositRequest request
     ) {
-        return bankingService.deposit(request);
+        return bankingService.deposit(accountId, request);
     }
 
     @PostMapping("withdraw")
     @ResponseStatus(HttpStatus.OK)
     public BankingResponse withdraw(
+            @PathVariable(name = "bank_account_id")
+            UUID accountId,
             @RequestBody
             WithdrawRequest request
     ) {
-        return bankingService.withdraw(request);
+        return bankingService.withdraw(accountId, request);
     }
 
     @PostMapping("transfer")
     @ResponseStatus(HttpStatus.OK)
     public BankingResponse transfer(
+            @PathVariable(name = "bank_account_id")
+            UUID accountId,
             @RequestBody
             TransferRequest request
     ) {
-        return bankingService.transfer(request);
+        return bankingService.transfer(accountId, request);
     }
 }

@@ -31,9 +31,9 @@ public class BankingService {
     }
 
     @Transactional
-    public BankingResponse deposit(DepositRequest request) {
-        log.info("trying to find banking account with id: {}", request.bankingAccountId());
-        BankAccountEntity bankAccountEntity = bankingRepo.findById(request.bankingAccountId())
+    public BankingResponse deposit(UUID bankAccountId, DepositRequest request) {
+        log.info("trying to find banking account with id: {}", bankAccountId);
+        BankAccountEntity bankAccountEntity = bankingRepo.findById(bankAccountId)
                 .orElseThrow(
                         () -> new RuntimeException("Banking account doesn't exist")
                 );
@@ -58,15 +58,15 @@ public class BankingService {
     }
 
     @Transactional
-    public BankingResponse withdraw(WithdrawRequest request) {
-        log.info("trying to find banking account with id: {}", request.bankingAccountId());
+    public BankingResponse withdraw(UUID bankAccountId, WithdrawRequest request) {
+        log.info("trying to find banking account with id: {}", bankAccountId);
         BankAccountEntity accountEntity = bankingRepo.findBankAccountEntitiesByIdAndPin(
-                        request.bankingAccountId(),
+                        bankAccountId,
                         request.pin()
                 )
                 .orElseThrow(
                         () -> new EntityNotFoundException(
-                                "banking account with id " + request.bankingAccountId() + " doesn't found"
+                                "banking account with id " + bankAccountId + " doesn't found"
                         )
                 );
 
@@ -94,15 +94,15 @@ public class BankingService {
     }
 
     @Transactional
-    public BankingResponse transfer(TransferRequest request) {
-        log.info("trying to find banking account for writing off money with id: {}", request.fromBankingAccountId());
+    public BankingResponse transfer(UUID bankAccountId,TransferRequest request) {
+        log.info("trying to find banking account for writing off money with id: {}", bankAccountId);
         BankAccountEntity fromAccountEntity = bankingRepo.findBankAccountEntitiesByIdAndPin(
-                        request.fromBankingAccountId(),
+                        bankAccountId,
                         request.pin()
                 )
                 .orElseThrow(
                         () -> new EntityNotFoundException(
-                                "banking account for writing off money with id: " + request.fromBankingAccountId()
+                                "banking account for writing off money with id: " + bankAccountId
                         )
                 );
 
@@ -110,7 +110,7 @@ public class BankingService {
         BankAccountEntity toAccountEntity = bankingRepo.findById(request.toBankingAccountId())
                 .orElseThrow(
                         () -> new EntityNotFoundException(
-                                "banking account for writing off money with id: " + request.fromBankingAccountId()
+                                "banking account for writing off money with id: " + bankAccountId
                         )
                 );
 
