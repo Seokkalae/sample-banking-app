@@ -42,18 +42,13 @@ public class AccountService {
         log.info("trying to find duplicate bankAccount with name: {}", request.fullName());
 
         Optional<AccountEntity> existingAccount = accountRepo.findByFirstNameAndLastNameAndPatronymicAndBirthday(
-                firstName, lastName, patronymic, birthday);
+                firstName, lastName, patronymic, birthday
+        );
 
-        if (existingAccount.isPresent()) {
-            boolean accountWithPinExists = existingAccount.get().getListBankAccount().stream()
-                    .anyMatch(bankAccount -> bankAccount.getPin().equals(request.pin()));
+        if (existingAccount.isPresent())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
-            if (accountWithPinExists) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-            }
-        }
-
-        AccountEntity accountEntity = existingAccount.orElseGet(AccountEntity::new);
+        var accountEntity = new AccountEntity();
         accountEntity.setFirstName(firstName);
         accountEntity.setLastName(lastName);
         accountEntity.setPatronymic(patronymic);
