@@ -1,5 +1,6 @@
 package org.seokkalae.samplebankingapp.converter;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.seokkalae.samplebankingapp.entity.AccountEntity;
 import org.seokkalae.samplebankingapp.entity.HistoryEntity;
 import org.seokkalae.samplebankingapp.model.history.HistoryResponse;
@@ -9,6 +10,9 @@ import java.util.List;
 
 public class HistoryConverter {
     public static HistoryResponse fromHistoryEntityListToHistoryResponse(List<HistoryEntity> source) {
+        if (source.isEmpty())
+            throw new EntityNotFoundException();
+
         var historyInfos = source
                 .stream()
                 .map(historyInfo -> new HistoryInfoModel(
