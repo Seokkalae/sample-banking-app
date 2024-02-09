@@ -3,16 +3,15 @@ package org.seokkalae.samplebankingapp.service;
 import jakarta.persistence.EntityNotFoundException;
 import org.seokkalae.samplebankingapp.entity.BankAccountEntity;
 import org.seokkalae.samplebankingapp.enums.OperationType;
-import org.seokkalae.samplebankingapp.model.banking.BankingResponse;
-import org.seokkalae.samplebankingapp.model.banking.DepositRequest;
-import org.seokkalae.samplebankingapp.model.banking.TransferRequest;
-import org.seokkalae.samplebankingapp.model.banking.WithdrawRequest;
+import org.seokkalae.samplebankingapp.model.banking.*;
 import org.seokkalae.samplebankingapp.repository.AccountRepository;
 import org.seokkalae.samplebankingapp.repository.BankingAccountRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -153,16 +152,24 @@ public class BankingService {
     }
 
     @Transactional
-    public BankAccountEntity createBankAccount(UUID accountId, String pin) {
-        log.info("trying to find account with {}", accountId);
-        var account = accountRepo.findById(accountId);
+    public CreateBankAccountResponse createBankAccount(CreateBankAccountRequest request) {
+        log.info("trying to find account with {}", request.accountId());
+        var account = accountRepo.findById(request.accountId());
         if (account.isEmpty())
             throw new EntityNotFoundException();
-        log.info("create bankAccount with accountId {}", accountId);
+
+        //Есть ли уже банковский счет у аккаунта с таким пином
+        boolean bankAccountWithPinExist = account.get().getListBankAccount().stream()
+                .anyMatch(bankAccount -> bankAccount.getPin().equals(request.pin()));
+        if (bankAccountWithPinExist)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+        log.info("create bankAccount with accountId {}", request.accountId());
 
         var bankAccount = new BankAccountEntity();
         bankAccount.setAccount(account.get());
-        bankAccount.setPin(pin);
-        return bankingRepo.save(bankAccount);
+        bankAccount.setPin(request.pin());
+        BankAccountEntity savedBankAccount = bankingRepo.save(bankAccount);
+        return new CreateBankAccountResponse(savedBankAccount.getId());
     }
 }
