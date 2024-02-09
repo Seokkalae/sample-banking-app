@@ -4,7 +4,7 @@ import org.seokkalae.samplebankingapp.converter.HistoryConverter;
 import org.seokkalae.samplebankingapp.entity.BankAccountEntity;
 import org.seokkalae.samplebankingapp.entity.HistoryEntity;
 import org.seokkalae.samplebankingapp.enums.OperationType;
-import org.seokkalae.samplebankingapp.model.history.AccountHistoryResponse;
+import org.seokkalae.samplebankingapp.model.history.HistoryResponse;
 import org.seokkalae.samplebankingapp.repository.HistoryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,11 +24,19 @@ public class HistoryService {
         this.historyRepo = historyRepo;
     }
 
-    public AccountHistoryResponse getAccountHistory(UUID accountId) {
+    public HistoryResponse getAccountHistory(UUID accountId) {
         log.info("trying to find history for account with id: {}", accountId);
         return HistoryConverter
-                .fromHistoryEntityToAccountHistoryResponse(
+                .fromHistoryEntityListToHistoryResponse(
                         historyRepo.findAllByBankAccount_Account_IdOrderByOperationTimestampTZDesc(accountId)
+                );
+    }
+
+    public HistoryResponse getBankAccountHistory(UUID bankAccountId) {
+        log.info("trying to find history for bank account with id: {}", bankAccountId);
+        return HistoryConverter
+                .fromHistoryEntityListToHistoryResponse(
+                        historyRepo.findAllByBankAccount_IdOrderByOperationTimestampTZDesc(bankAccountId)
                 );
     }
 

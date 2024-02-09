@@ -3,7 +3,7 @@ package org.seokkalae.samplebankingapp.controller;
 import org.seokkalae.samplebankingapp.model.account.AccountCreateRequest;
 import org.seokkalae.samplebankingapp.model.account.AccountCreateResponse;
 import org.seokkalae.samplebankingapp.model.account.AccountInfoResponse;
-import org.seokkalae.samplebankingapp.model.history.AccountHistoryResponse;
+import org.seokkalae.samplebankingapp.model.history.HistoryResponse;
 import org.seokkalae.samplebankingapp.service.AccountService;
 import org.seokkalae.samplebankingapp.service.HistoryService;
 import org.springframework.http.HttpStatus;
@@ -42,7 +42,7 @@ public class AccountController {
 
     @GetMapping("{account_id}/history")
     @ResponseStatus(HttpStatus.OK)
-    public AccountHistoryResponse getAccountHistoryInfo(
+    public HistoryResponse getAccountHistoryInfo(
             @PathVariable("account_id")
             UUID id
     ) {

@@ -11,4 +11,5 @@ import java.util.UUID;
 @Repository
 public interface HistoryRepository extends CrudRepository<HistoryEntity, UUID> {
     List<HistoryEntity> findAllByBankAccount_Account_IdOrderByOperationTimestampTZDesc (UUID accountId);
+    List<HistoryEntity> findAllByBankAccount_IdOrderByOperationTimestampTZDesc (UUID bankAccountId);
 }

@@ -4,7 +4,7 @@ import org.seokkalae.samplebankingapp.model.history.submodel.HistoryInfoModel;
 
 import java.util.List;
 
-public record AccountHistoryResponse(
+public record HistoryResponse(
         String firstName,
         String lastName,
         String patronymic,
