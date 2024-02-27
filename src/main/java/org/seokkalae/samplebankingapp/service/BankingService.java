@@ -1,8 +1,13 @@
 package org.seokkalae.samplebankingapp.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.mapstruct.factory.Mappers;
+import org.seokkalae.samplebankingapp.dto.AccountDto;
+import org.seokkalae.samplebankingapp.dto.BankAccountDto;
 import org.seokkalae.samplebankingapp.entity.BankAccountEntity;
 import org.seokkalae.samplebankingapp.enums.OperationType;
+import org.seokkalae.samplebankingapp.mapper.BankAccountMapper;
+import org.seokkalae.samplebankingapp.mapper.HistoryMapper;
 import org.seokkalae.samplebankingapp.model.banking.*;
 import org.seokkalae.samplebankingapp.repository.AccountRepository;
 import org.seokkalae.samplebankingapp.repository.BankingAccountRepository;
@@ -22,6 +27,8 @@ public class BankingService {
     private final HistoryService history;
     private final BankingAccountRepository bankingRepo;
     private final AccountRepository accountRepo;
+    private final BankAccountMapper bankAccountMapper = Mappers.getMapper(BankAccountMapper.class);
+    private final HistoryMapper historyMapper = Mappers.getMapper(HistoryMapper.class);
 
     public BankingService(HistoryService history, BankingAccountRepository bankingRepo, AccountRepository accountRepo) {
         this.history = history;
@@ -30,146 +37,133 @@ public class BankingService {
     }
 
     @Transactional
-    public BankingResponse deposit(UUID bankAccountId, DepositRequest request) {
-        log.info("trying to find banking account with id: {}", bankAccountId);
-        BankAccountEntity bankAccountEntity = bankingRepo.findById(bankAccountId)
+    public BankAccountDto deposit(BankAccountDto dto) {
+        log.info("trying to find banking account with id: {}", dto.id());
+        var bankAccountEntity = bankingRepo.findById(dto.id())
                 .orElseThrow(
                         () -> new RuntimeException("Banking account doesn't exist")
                 );
-        BigDecimal resultSum = bankAccountEntity.getMoneyFunds().add(request.sum());
+        var resultSum = bankAccountEntity.getMoneyFunds().add(dto.moneyFunds());
         bankAccountEntity.setMoneyFunds(resultSum);
-        log.info("deposit money to banking account with sum: {}", request.sum());
-        BankAccountEntity save = bankingRepo.save(bankAccountEntity);
+        log.info("deposit money to banking account with sum: {}", dto.moneyFunds());
+        var save = bankingRepo.save(bankAccountEntity);
         log.info("deposit successful");
 
-        history.createEvent(
+        history.createEvent(historyMapper.toHistoryDto(
                 bankAccountEntity,
                 OperationType.DEPOSIT,
-                request.sum(),
-                null
-        );
+                null,
+                dto.moneyFunds()
+        ));
 
-        return new BankingResponse(
-                save.getId(),
-                OperationType.DEPOSIT,
-                save.getMoneyFunds()
-        );
+        return bankAccountMapper.toBankAccountDto(save);
     }
 
     @Transactional
-    public BankingResponse withdraw(UUID bankAccountId, WithdrawRequest request) {
-        log.info("trying to find banking account with id: {}", bankAccountId);
-        BankAccountEntity accountEntity = bankingRepo.findBankAccountEntitiesByIdAndPin(
-                        bankAccountId,
-                        request.pin()
+    public BankAccountDto withdraw(BankAccountDto dto) {
+        log.info("trying to find banking account with id: {}", dto.id());
+        var bankAccountEntity = bankingRepo.findBankAccountEntitiesByIdAndPin(
+                        dto.id(),
+                        dto.pin()
                 )
                 .orElseThrow(
                         () -> new EntityNotFoundException(
-                                "banking account with id " + bankAccountId + " doesn't found"
+                                "banking account with id " + dto.id() + " doesn't found"
                         )
                 );
 
-        BigDecimal resultSum = accountEntity.getMoneyFunds().subtract(request.sum());
+        var resultSum = bankAccountEntity.getMoneyFunds().subtract(dto.moneyFunds());
         if (resultSum.compareTo(BigDecimal.ZERO) < 0)
             throw new RuntimeException("total amount can't be negative");
-        accountEntity.setMoneyFunds(resultSum);
+        bankAccountEntity.setMoneyFunds(resultSum);
 
-        log.info("withdraw money to banking account with sum: {}", request.sum());
-        BankAccountEntity save = bankingRepo.save(accountEntity);
+        log.info("withdraw money to banking account with sum: {}", dto.moneyFunds());
+        BankAccountEntity save = bankingRepo.save(bankAccountEntity);
         log.info("withdraw successful");
 
-        history.createEvent(
-                accountEntity,
+        history.createEvent(historyMapper.toHistoryDto(
+                save,
                 OperationType.WITHDRAW,
-                request.sum(),
-                null
-        );
+                null,
+                dto.moneyFunds()
+        ));
 
-        return new BankingResponse(
-                save.getId(),
-                OperationType.WITHDRAW,
-                save.getMoneyFunds()
-        );
+        return bankAccountMapper.toBankAccountDto(save);
     }
 
     @Transactional
-    public BankingResponse transfer(UUID bankAccountId,TransferRequest request) {
-        log.info("trying to find banking account for writing off money with id: {}", bankAccountId);
-        BankAccountEntity fromAccountEntity = bankingRepo.findBankAccountEntitiesByIdAndPin(
-                        bankAccountId,
-                        request.pin()
+    public BankAccountDto transfer(BankAccountDto dto, UUID toBankAccountId) {
+        log.info("trying to find banking account for writing off money with id: {}", dto.id());
+        var fromAccountEntity = bankingRepo.findBankAccountEntitiesByIdAndPin(
+                        dto.id(),
+                        dto.pin()
                 )
                 .orElseThrow(
                         () -> new EntityNotFoundException(
-                                "banking account for writing off money with id: " + bankAccountId
+                                "banking account for writing off money with id: " + dto.id()
                         )
                 );
 
-        log.info("trying to find banking account for replenishment money with id: {}", request.toBankingAccountId());
-        BankAccountEntity toAccountEntity = bankingRepo.findById(request.toBankingAccountId())
+        log.info("trying to find banking account for replenishment money with id: {}", toBankAccountId);
+        var toBankAccountEntity = bankingRepo.findById(toBankAccountId)
                 .orElseThrow(
                         () -> new EntityNotFoundException(
-                                "banking account for writing off money with id: " + bankAccountId
+                                "banking account for writing off money with id: " + toBankAccountId
                         )
                 );
 
-
-        BigDecimal fromResultSum = fromAccountEntity.getMoneyFunds().subtract(request.sum());
+        var fromResultSum = fromAccountEntity.getMoneyFunds().subtract(dto.moneyFunds());
         if (fromResultSum.compareTo(BigDecimal.ZERO) < 0)
             throw new RuntimeException("total amount can't be negative");
         fromAccountEntity.setMoneyFunds(fromResultSum);
 
-        log.info("writing off money from banking account with sum: {}", request.sum());
-        BankAccountEntity saveFrom = bankingRepo.save(fromAccountEntity);
+        log.info("writing off money from banking account with sum: {}", dto.moneyFunds());
+        var saveFrom = bankingRepo.save(fromAccountEntity);
         log.info("writing off successful");
 
-        history.createEvent(
-                fromAccountEntity,
+        history.createEvent(historyMapper.toHistoryDto(
+                saveFrom,
                 OperationType.TRANSFER_OUT,
-                request.sum(),
-                toAccountEntity
-        );
+                toBankAccountEntity,
+                dto.moneyFunds()
+        ));
 
-        BigDecimal toResultSum = toAccountEntity.getMoneyFunds().add(request.sum());
-        toAccountEntity.setMoneyFunds(toResultSum);
+        var toResultSum = toBankAccountEntity.getMoneyFunds().add(dto.moneyFunds());
+        toBankAccountEntity.setMoneyFunds(toResultSum);
 
-        log.info("replenishment money to banking account with sum: {}", request.sum());
-        BankAccountEntity saveTo = bankingRepo.save(toAccountEntity);
+        log.info("replenishment money to banking account with sum: {}", dto.moneyFunds());
+        var saveTo = bankingRepo.save(toBankAccountEntity);
         log.info("replenishment successful");
 
-        history.createEvent(
-                toAccountEntity,
+        history.createEvent(historyMapper.toHistoryDto(
+                saveTo,
                 OperationType.TRANSFER_IN,
-                request.sum(),
-                fromAccountEntity
-        );
+                fromAccountEntity,
+                dto.moneyFunds()
+        ));
 
-        return new BankingResponse(
-                saveFrom.getId(),
-                OperationType.TRANSFER_OUT,
-                saveFrom.getMoneyFunds()
-        );
+        return bankAccountMapper.toBankAccountDto(saveFrom);
     }
 
     @Transactional
-    public CreateBankAccountResponse createBankAccount(CreateBankAccountRequest request) {
-        log.info("trying to find account with {}", request.accountId());
-        var account = accountRepo.findById(request.accountId());
+    public BankAccountDto createBankAccount(UUID accountId, String pin) {
+        log.info("trying to find account with {}", accountId);
+        var account = accountRepo.findById(accountId);
         if (account.isEmpty())
             throw new EntityNotFoundException();
 
         //Есть ли уже банковский счет у аккаунта с таким пином
-        boolean bankAccountWithPinExist = account.get().getListBankAccount().stream()
-                .anyMatch(bankAccount -> bankAccount.getPin().equals(request.pin()));
+        var bankAccountWithPinExist = account.get().getListBankAccount().stream()
+                .anyMatch(bankAccount -> bankAccount.getPin().equals(pin));
         if (bankAccountWithPinExist)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
-        log.info("create bankAccount with accountId {}", request.accountId());
+        log.info("create bankAccount with accountId {}", account);
 
         var bankAccount = new BankAccountEntity();
         bankAccount.setAccount(account.get());
-        bankAccount.setPin(request.pin());
-        BankAccountEntity savedBankAccount = bankingRepo.save(bankAccount);
-        return new CreateBankAccountResponse(savedBankAccount.getId());
+        bankAccount.setPin(pin);
+        var savedBankAccount = bankingRepo.save(bankAccount);
+        return bankAccountMapper.toBankAccountDto(savedBankAccount);
     }
 }

@@ -1,5 +1,9 @@
 package org.seokkalae.samplebankingapp.controller;
 
+import org.mapstruct.factory.Mappers;
+import org.seokkalae.samplebankingapp.enums.OperationType;
+import org.seokkalae.samplebankingapp.mapper.BankAccountMapper;
+import org.seokkalae.samplebankingapp.mapper.HistoryMapper;
 import org.seokkalae.samplebankingapp.model.banking.*;
 import org.seokkalae.samplebankingapp.model.history.HistoryResponse;
 import org.seokkalae.samplebankingapp.service.BankingService;
@@ -14,6 +18,8 @@ import java.util.UUID;
 public class BankingController {
     private final BankingService bankingService;
     private final HistoryService historyService;
+    private final BankAccountMapper bankAccountMapper = Mappers.getMapper(BankAccountMapper.class);
+    private final HistoryMapper historyMapper = Mappers.getMapper(HistoryMapper.class);
 
     public BankingController(BankingService bankingService, HistoryService historyService) {
         this.bankingService = bankingService;
@@ -28,7 +34,11 @@ public class BankingController {
             @RequestBody
             DepositRequest request
     ) {
-        return bankingService.deposit(bankAccountId, request);
+        var result = bankingService.deposit(bankAccountMapper.toBankAccountDto(
+                bankAccountId,
+                request
+        ));
+        return bankAccountMapper.toBankingResponse(result, OperationType.DEPOSIT);
     }
 
     @PostMapping("{bank_account_id}/withdraw")
@@ -39,7 +49,11 @@ public class BankingController {
             @RequestBody
             WithdrawRequest request
     ) {
-        return bankingService.withdraw(bankAccountId, request);
+        var result = bankingService.withdraw(bankAccountMapper.toBankAccountDto(
+                bankAccountId,
+                request
+        ));
+        return bankAccountMapper.toBankingResponse(result, OperationType.WITHDRAW);
     }
 
     @PostMapping("{bank_account_id}/transfer")
@@ -50,7 +64,13 @@ public class BankingController {
             @RequestBody
             TransferRequest request
     ) {
-        return bankingService.transfer(bankAccountId, request);
+        var result = bankingService.transfer(bankAccountMapper.toBankAccountDto(
+                        bankAccountId,
+                        request
+                )
+                , request.toBankingAccountId()
+        );
+        return bankAccountMapper.toBankingResponse(result, OperationType.TRANSFER_OUT);
     }
 
     @GetMapping("{bank_account_id}")
@@ -59,7 +79,8 @@ public class BankingController {
             @PathVariable(name = "bank_account_id")
             UUID bankAccountId
     ) {
-        return historyService.getBankAccountHistory(bankAccountId);
+        var result = historyService.getBankAccountHistory(bankAccountId);
+        return historyMapper.toHistoryResponse(result);
     }
 
     @PostMapping
@@ -68,6 +89,9 @@ public class BankingController {
             @RequestBody
             CreateBankAccountRequest request
     ) {
-        return bankingService.createBankAccount(request);
+        var result = bankingService.createBankAccount(request.accountId(), request.pin());
+        return new CreateBankAccountResponse(
+                result.id()
+        );
     }
 }

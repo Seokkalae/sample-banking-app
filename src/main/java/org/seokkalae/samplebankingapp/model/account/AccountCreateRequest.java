@@ -10,8 +10,4 @@ public record AccountCreateRequest(
         LocalDate birthday,
         String pin)
 {
-    public String getFullName() {
-        StringJoiner joiner  = new StringJoiner(" ");
-        return joiner.add(firstName).add(lastName).add(patronymic).toString();
-    }
 }

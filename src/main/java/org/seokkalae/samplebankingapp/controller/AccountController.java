@@ -1,5 +1,8 @@
 package org.seokkalae.samplebankingapp.controller;
 
+import org.mapstruct.factory.Mappers;
+import org.seokkalae.samplebankingapp.mapper.AccountMapper;
+import org.seokkalae.samplebankingapp.mapper.HistoryMapper;
 import org.seokkalae.samplebankingapp.model.account.AccountCreateRequest;
 import org.seokkalae.samplebankingapp.model.account.AccountCreateResponse;
 import org.seokkalae.samplebankingapp.model.account.AccountInfoResponse;
@@ -16,6 +19,8 @@ import java.util.UUID;
 public class AccountController {
     private final AccountService accountService;
     private final HistoryService historyService;
+    private final AccountMapper accountMapper = Mappers.getMapper(AccountMapper.class);
+    private final HistoryMapper historyMapper = Mappers.getMapper(HistoryMapper.class);
 
     public AccountController(AccountService accountService, HistoryService historyService) {
         this.accountService = accountService;
@@ -28,7 +33,8 @@ public class AccountController {
             @RequestBody
             AccountCreateRequest request
     ) {
-        return accountService.createAccount(request);
+        var result = accountService.createAccount(accountMapper.toAccountDto(request));
+        return accountMapper.toAccountCreateResponse(result);
     }
 
     @GetMapping("{account_id}")
@@ -37,7 +43,8 @@ public class AccountController {
             @PathVariable("account_id")
             UUID id
     ) {
-        return accountService.getAccountInfo(id);
+        var result = accountService.getAccountInfo(id);
+        return accountMapper.toAccountInfoResponse(result);
     }
 
     @GetMapping("{account_id}/history")
@@ -46,6 +53,7 @@ public class AccountController {
             @PathVariable("account_id")
             UUID id
     ) {
-        return historyService.getAccountHistory(id);
+        var result = historyService.getAccountHistory(id);
+        return historyMapper.toHistoryResponse(result);
     }
 }
