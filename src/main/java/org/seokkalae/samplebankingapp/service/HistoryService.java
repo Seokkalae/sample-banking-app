@@ -4,7 +4,6 @@ import org.mapstruct.factory.Mappers;
 import org.seokkalae.samplebankingapp.dto.HistoryDto;
 import org.seokkalae.samplebankingapp.entity.BankAccountEntity;
 import org.seokkalae.samplebankingapp.mapper.HistoryMapper;
-import org.seokkalae.samplebankingapp.repository.AccountRepository;
 import org.seokkalae.samplebankingapp.repository.BankingAccountRepository;
 import org.seokkalae.samplebankingapp.repository.HistoryRepository;
 import org.slf4j.Logger;
@@ -14,7 +13,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service

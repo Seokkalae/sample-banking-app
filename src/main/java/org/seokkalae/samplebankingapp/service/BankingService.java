@@ -2,13 +2,11 @@ package org.seokkalae.samplebankingapp.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.mapstruct.factory.Mappers;
-import org.seokkalae.samplebankingapp.dto.AccountDto;
 import org.seokkalae.samplebankingapp.dto.BankAccountDto;
 import org.seokkalae.samplebankingapp.entity.BankAccountEntity;
 import org.seokkalae.samplebankingapp.enums.OperationType;
 import org.seokkalae.samplebankingapp.mapper.BankAccountMapper;
 import org.seokkalae.samplebankingapp.mapper.HistoryMapper;
-import org.seokkalae.samplebankingapp.model.banking.*;
 import org.seokkalae.samplebankingapp.repository.AccountRepository;
 import org.seokkalae.samplebankingapp.repository.BankingAccountRepository;
 import org.slf4j.Logger;

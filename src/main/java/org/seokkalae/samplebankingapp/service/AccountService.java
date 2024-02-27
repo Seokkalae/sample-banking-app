@@ -2,25 +2,18 @@ package org.seokkalae.samplebankingapp.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.mapstruct.factory.Mappers;
-import org.seokkalae.samplebankingapp.converter.AccountConverter;
 import org.seokkalae.samplebankingapp.dto.AccountDto;
 import org.seokkalae.samplebankingapp.entity.AccountEntity;
-import org.seokkalae.samplebankingapp.entity.BankAccountEntity;
 import org.seokkalae.samplebankingapp.mapper.AccountMapper;
-import org.seokkalae.samplebankingapp.model.account.AccountCreateRequest;
-import org.seokkalae.samplebankingapp.model.account.AccountCreateResponse;
-import org.seokkalae.samplebankingapp.model.account.AccountInfoResponse;
 import org.seokkalae.samplebankingapp.repository.AccountRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.util.LinkedList;
 import java.util.Optional;
 import java.util.UUID;
 
